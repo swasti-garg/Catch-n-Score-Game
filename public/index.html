@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catch n Score</title>
+  <style>
+    :root { --bg:#12121c; --fg:#e8e8f0; --muted:#9a9ab0; }
+    @media (prefers-color-scheme: light) { :root { --bg:#f2f2f7; --fg:#1b1b26; --muted:#5d5d70; } }
+    html, body { margin:0; min-height:100%; background:var(--bg); color:var(--fg);
+                 font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    body { display:flex; flex-direction:column; align-items:center; padding:16px; box-sizing:border-box; }
+    h1 { margin:8px 0 4px; font-size:1.5rem; }
+    p.hint { margin:0 0 12px; color:var(--muted); font-size:.9rem; text-align:center; }
+    #game { position:relative; width:min(100%, 760px); height:680px; max-width:100%; overflow:auto; }
+    #status { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+              color:var(--muted); pointer-events:none; text-align:center; padding:0 16px; }
+    #status.hidden { display:none; }
+  </style>
+  <script src="https://cjrtnc.leaningtech.com/4.3/loader.js"></script>
+</head>
+<body>
+  <h1>Catch n Score</h1>
+  <p class="hint">Click the game once, then play: ENTER to start · M to switch mode · ←/→ or mouse to move · P to pause</p>
+  <div id="game"><div id="status">Loading Java runtime… (first load can take a few seconds)</div></div>
+
+  <script type="module">
+    const status = document.getElementById("status");
+
+    // Stop arrow keys from scrolling the page while playing
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) e.preventDefault();
+    });
+
+    // Files the game reads by relative path (new File("sounds/catch.wav"), "words.txt").
+    // CheerpJ resolves relative paths to /files/, so we copy them there from the web server (/app/).
+    const ASSETS = ["words.txt"];
+
+    // Sound: the web build's SoundPlayer.play(String) is a native method implemented here,
+    // using the browser's own audio (javax.sound doesn't output audio in the browser JVM).
+    const sounds = {};
+    async function Java_SoundPlayer_play(lib, filename) {
+      try {
+        let a = sounds[filename];
+        if (!a) { a = sounds[filename] = new Audio(filename); a.preload = "auto"; }
+        const c = a.cloneNode(); // allows overlapping plays of the same sound
+        await c.play();
+      } catch (e) { console.warn("Sound failed:", filename, e); }
+    }
+    ["sounds/catch.wav","sounds/miss.wav","sounds/level_up.wav","sounds/game_over.wav"]
+      .forEach(f => { const a = new Audio(f); a.preload = "auto"; sounds[f] = a; });
+
+    async function stageAssets() {
+      const lib = await cheerpjRunLibrary("");
+      const Files = await lib.java.nio.file.Files;
+      const Paths = await lib.java.nio.file.Paths;
+      const Copy  = await lib.java.nio.file.StandardCopyOption;
+      for (const f of ASSETS) {
+        try {
+          await Files.copy(await Paths.get("/app/" + f), await Paths.get("/files/" + f), [await Copy.REPLACE_EXISTING]);
+        } catch (e) { console.warn("Could not stage", f, e); }
+      }
+    }
+
+    try {
+      await cheerpjInit({ version: 17, natives: { Java_SoundPlayer_play } });
+      await stageAssets();
+      status.classList.add("hidden");
+      cheerpjCreateDisplay(-1, -1, document.getElementById("game"));
+      await cheerpjRunJar("/app/game.jar");
+    } catch (e) {
+      console.error(e);
+      status.classList.remove("hidden");
+      status.textContent = "Could not start the game. Open the browser console for details.";
+    }
+  </script>
+</body>
+</html>
