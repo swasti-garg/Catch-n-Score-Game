@@ -1,33 +1,185 @@
-# Catch n Score (web)
 
-Your original Java/Swing game, running in the browser via [CheerpJ](https://cheerpj.com)
-(a WebAssembly JVM). **No Java source was changed** — `src/` is byte-identical to the original.
+# 🎮 Catch n Score
 
+An interactive arcade-style game built using **Java Swing**, featuring multiple game modes, real-time animations, keyboard and mouse controls, and sound effects. Play directly in your browser without installing Java!
+
+<p align="center">
+  <a href="https://catch-n-score-game.onrender.com/">🎮 Play Live Demo</a> •
+  <a href="https://github.com/swasti-garg/Catch-n-Score-Game">📂 Source Code</a>
+</p>
+---
+
+## ✨ Features
+
+- **Multiple Game Modes**
+  - 🍎 Fruit Mode – Catch falling fruits using a movable basket.
+  - 🔤 Letter Mode – Catch letters to form target words.
+  - 🏆 Challenge Mode – Additional challenge-oriented gameplay.
+
+- **Interactive Gameplay**
+  - Real-time falling object animations.
+  - Keyboard and mouse-based basket movement.
+  - Score, lives, and level tracking.
+  - Pause, resume, and restart functionality.
+
+- **Game Mechanics**
+  - Collision detection between falling objects and the basket.
+  - Increasing difficulty across levels.
+  - Level completion and game-over states.
+
+- **Sound Effects**
+  - Catch, miss, level-up, and game-over audio feedback.
+
+- **Browser Accessibility**
+  - Runs through a browser-based Java runtime using CheerpJ.
+  - No separate Java installation required for players.
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|---|---|
+| Language | Java |
+| GUI | Java Swing, AWT |
+| Event Handling | KeyListener, MouseMotionListener, ActionListener |
+| Animation | Swing Timer |
+| Audio | Java Sound API |
+| Browser Runtime | CheerpJ |
+| Hosting | Render Static Site |
+
+## 🎯 Controls
+
+| Key / Input | Action |
+|---|---|
+| ENTER | Start game / Next level |
+| LEFT ARROW | Move basket left |
+| RIGHT ARROW | Move basket right |
+| Mouse Movement | Move basket |
+| M | Toggle game mode (menu) |
+| P | Pause / Resume |
+| R | Restart after game over |
+
+## 🏗️ Project Structure
+
+```text
+Catch-n-Score/
+│
+├── public/
+│   ├── index.html
+│   ├── game.jar
+│   ├── words.txt
+│   ├── .nojekyll
+│   └── sounds/
+│
+├── src/
+│   ├── Basket.java
+│   ├── Catchable.java
+│   ├── ChallengeMode.java
+│   ├── FallingItem.java
+│   ├── FruitItem.java
+│   ├── FruitMode.java
+│   ├── FruitType.java
+│   ├── GameMode.java
+│   ├── GamePanel.java
+│   ├── GameState.java
+│   ├── LetterItem.java
+│   ├── LetterMode.java
+│   ├── mygame.java
+│   ├── SoundPlayer.java
+│   └── WordLoader.java
+│
+├── web-shim/
+│   └── SoundPlayer.java
+│
+├── build.sh
+└── README.md
 ```
-src/        original .java files (untouched)
-public/     the deployable website  <- upload/deploy THIS folder
-  index.html   loads CheerpJ, runs game.jar
-  game.jar     compiled from src/ (Java 17 bytecode)
-  words.txt, sounds/   game assets (sounds played via browser audio)
-build.sh    rebuilds public/game.jar after you edit src/
+
+## ⚙️ Run Locally
+
+### Prerequisites
+
+- Java Development Kit (JDK 17 or later)
+- Git
+- A modern web browser
+
+### 1. Clone the repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+cd Catch-n-Score
 ```
 
-## Run locally
-    cd public && python3 -m http.server 8080     # then open http://localhost:8080
-(Must be served over HTTP; opening index.html by double-click will not work.)
+### 2. Build the Java application
 
-## Deploy (static hosting, serve `public/` at the site ROOT)
-- **Netlify**: drag-and-drop the `public` folder at app.netlify.com/drop
-- **Vercel / Cloudflare Pages**: import the repo, set output/publish directory to `public`, no build command
-- **GitHub Pages**: works if the site is at the domain root (user.github.io or a custom domain).
-  A project site (user.github.io/repo/) breaks because CheerpJ's `/app/` points to the domain root.
+```bash
+chmod +x build.sh
+./build.sh
+```
 
-## After editing Java code
-    ./build.sh      # needs JDK 17+
-then redeploy `public/`.
+This generates the packaged game JAR inside the `public/` directory.
 
-Note: CheerpJ is free for personal / non-commercial use; check cheerpj.com/licensing for commercial use.
+### 3. Start a local web server
 
-## Note on sound
-`src/SoundPlayer.java` is untouched, but the web build compiles `web-shim/SoundPlayer.java` instead
-(same class/method name) so sounds play through the browser's audio. Desktop Java is unaffected.
+```bash
+npx http-server public -p 8080
+```
+
+### 4. Open the game
+
+Visit:
+
+```text
+http://localhost:8080
+```
+
+The browser loads the CheerpJ runtime and launches the Java application.
+
+## 🌐 Deployment
+
+The application can be hosted as a static website using Render.
+
+1. Push the project to a GitHub repository.
+2. Create a new Static Site on Render.
+3. Connect your GitHub repository.
+4. Configure the following settings:
+
+| Setting | Value |
+|---|---|
+| Branch | `main` |
+| Root Directory | Leave empty |
+| Build Command | Leave empty |
+| Publish Directory | `public` |
+
+5. Deploy the application.
+
+Once deployment is complete, Render provides a public URL through which users can access the game.
+
+## 🧠 Key Learnings
+
+- Implemented object-oriented programming principles using Java.
+- Developed interactive GUI applications using Swing and AWT.
+- Applied event-driven programming for keyboard and mouse interactions.
+- Implemented collision detection and real-time game animations.
+- Managed game states, scoring, levels, and multiple game modes.
+- Explored browser-based execution of Java applications using CheerpJ.
+- Learned static website deployment using Render.
+
+## 🚀 Future Improvements
+
+- Add more game modes and difficulty levels.
+- Introduce player high scores and leaderboards.
+- Improve mobile and touch-screen controls.
+- Add customizable themes and game settings.
+- Enhance animations and gameplay experience.
+
+---
+
+## 👩‍💻 Author
+
+**Swasti Garg**
+
+B.Tech Computer Science and Engineering
+
+---
+
+⭐ If you enjoyed playing Catch n Score, consider giving the repository a star!
